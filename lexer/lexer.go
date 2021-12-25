@@ -90,6 +90,7 @@ func (l *Lexer) readChar() {
 	} else {
 		l.ch = l.input[l.readPosition]
 	}
+
 	l.position = l.readPosition
 	l.readPosition += 1
 }
