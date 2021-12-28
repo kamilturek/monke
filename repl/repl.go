@@ -15,7 +15,10 @@ func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
 
 	for {
-		io.WriteString(out, PROMPT)
+		_, err := io.WriteString(out, PROMPT)
+		if err != nil {
+			panic(err)
+		}
 		if !scanner.Scan() {
 			return
 		}
@@ -24,7 +27,10 @@ func Start(in io.Reader, out io.Writer) {
 
 		for tok := l.NextToken(); tok.Type != token.EOF; tok = l.NextToken() {
 			tokFmt := fmt.Sprintf("%+v\n", tok)
-			io.WriteString(out, tokFmt)
+			_, err = io.WriteString(out, tokFmt)
+			if err != nil {
+				panic(err)
+			}
 		}
 	}
 }
