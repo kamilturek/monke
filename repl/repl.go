@@ -19,6 +19,7 @@ func Start(in io.Reader, out io.Writer) {
 		if err != nil {
 			panic(err)
 		}
+
 		if !scanner.Scan() {
 			return
 		}
@@ -27,8 +28,7 @@ func Start(in io.Reader, out io.Writer) {
 
 		for tok := l.NextToken(); tok.Type != token.EOF; tok = l.NextToken() {
 			tokFmt := fmt.Sprintf("%+v\n", tok)
-			_, err = io.WriteString(out, tokFmt)
-			if err != nil {
+			if _, err := io.WriteString(out, tokFmt); err != nil {
 				panic(err)
 			}
 		}

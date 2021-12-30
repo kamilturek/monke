@@ -6,11 +6,11 @@ const (
 	ILLEGAL = "ILLEGAL"
 	EOF     = "EOF"
 
-	// Identifiers & literals
+	// Identifiers & literals.
 	IDENT = "IDENT"
 	INT   = "INT"
 
-	// Operators
+	// Operators.
 	ASSIGN   = "="
 	ASTERISK = "*"
 	BANG     = "!"
@@ -18,12 +18,12 @@ const (
 	PLUS     = "+"
 	SLASH    = "/"
 
-	EQ     = "=="
-	LT     = "<"
-	GT     = ">"
-	NOT_EQ = "!="
+	EQ    = "=="
+	LT    = "<"
+	GT    = ">"
+	NOTEQ = "!="
 
-	// Delimiters
+	// Delimiters.
 	COMMA     = ","
 	SEMICOLON = ";"
 
@@ -32,7 +32,7 @@ const (
 	LBRACE = "{"
 	RBRACE = "}"
 
-	// Keywords
+	// Keywords.
 	ELSE     = "ELSE"
 	FUNCTION = "FUNCTION"
 	FALSE    = "FALSE"
@@ -61,5 +61,6 @@ func LookupIdent(ident string) TokenType {
 	if tok, ok := keywords[ident]; ok {
 		return tok
 	}
+
 	return IDENT
 }

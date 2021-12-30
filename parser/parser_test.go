@@ -1,13 +1,16 @@
-package parser
+package parser_test
 
 import (
 	"testing"
 
 	"github.com/kamilturek/monke/ast"
 	"github.com/kamilturek/monke/lexer"
+	"github.com/kamilturek/monke/parser"
 )
 
 func TestLetStatements(t *testing.T) {
+	t.Parallel()
+
 	input := `
 let x = 5;
 let y = 10;
@@ -15,13 +18,15 @@ let foobar = 838383;
 `
 
 	l := lexer.New(input)
-	p := New(l)
+	p := parser.New(l)
 
 	program := p.ParseProgram()
 	checkParserErrors(t, p)
+
 	if program == nil {
 		t.Fatalf("ParseProgram() returned nil")
 	}
+
 	if len(program.Statements) != 3 {
 		t.Fatalf("program.Statements does not contain 3 statements. got=%d", len(program.Statements))
 	}
@@ -43,6 +48,8 @@ let foobar = 838383;
 }
 
 func testLetStatement(t *testing.T, s ast.Statement, name string) bool {
+	t.Helper()
+
 	if s.TokenLiteral() != "let" {
 		t.Errorf("s.TokenLiteral not 'let'. got=%q", s.TokenLiteral())
 		return false
@@ -67,7 +74,9 @@ func testLetStatement(t *testing.T, s ast.Statement, name string) bool {
 	return true
 }
 
-func checkParserErrors(t *testing.T, p *Parser) {
+func checkParserErrors(t *testing.T, p *parser.Parser) {
+	t.Helper()
+
 	errors := p.Errors()
 
 	if len(errors) == 0 {

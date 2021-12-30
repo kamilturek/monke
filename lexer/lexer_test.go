@@ -1,12 +1,15 @@
-package lexer
+package lexer_test
 
 import (
 	"testing"
 
+	"github.com/kamilturek/monke/lexer"
 	"github.com/kamilturek/monke/token"
 )
 
 func TestNextToken(t *testing.T) {
+	t.Parallel()
+
 	input := `let five = 5;
 let ten = 10;
 
@@ -101,13 +104,13 @@ if (5 < 10) {
 		{token.INT, "10"},
 		{token.SEMICOLON, ";"},
 		{token.INT, "10"},
-		{token.NOT_EQ, "!="},
+		{token.NOTEQ, "!="},
 		{token.INT, "9"},
 		{token.SEMICOLON, ";"},
 		{token.EOF, ""},
 	}
 
-	l := New(input)
+	l := lexer.New(input)
 
 	for i, tt := range tests {
 		tok := l.NextToken()
