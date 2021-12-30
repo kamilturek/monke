@@ -1,0 +1,18 @@
+linters:
+  enable-all: true
+  disable:
+    - cyclop
+    - exhaustivestruct
+    - forbidigo
+    - funlen
+    - gochecknoglobals 
+    - gocritic
+    - gofumpt
+    - golint
+    - interfacer
+    - ireturn
+    - maligned
+    - nlreturn
+    - revive
+    - scopelint
+    - varnamelen
