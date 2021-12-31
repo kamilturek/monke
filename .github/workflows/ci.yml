@@ -19,5 +19,8 @@ jobs:
         run: go get ./...
       - name: Run build
         run: go build .
+      - name: Run linter
+        uses: golangci/golangci-lint-action@v2
       - name: Run tests
         run: go test -v ./...
+        
