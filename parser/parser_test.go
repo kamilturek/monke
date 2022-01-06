@@ -133,6 +133,8 @@ func TestIntegerLiteralExpression(t *testing.T) {
 }
 
 func TestBooleanExpression(t *testing.T) {
+	t.Parallel()
+
 	tests := []struct {
 		input           string
 		expectedBoolean bool
@@ -142,24 +144,29 @@ func TestBooleanExpression(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		l := lexer.New(tt.input)
-		p := parser.New(l)
+		tt := tt
+		t.Run(tt.input, func(t *testing.T) {
+			t.Parallel()
 
-		program := p.ParseProgram()
-		checkParserErrors(t, p)
+			l := lexer.New(tt.input)
+			p := parser.New(l)
 
-		if len(program.Statements) != 1 {
-			t.Fatalf("program.Statements does not contain enough statements. expected=%d, got=%d", 1, len(program.Statements))
-		}
+			program := p.ParseProgram()
+			checkParserErrors(t, p)
 
-		stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
-		if !ok {
-			t.Fatalf("program.Statments[0] not *ast.ExpressionStatement. got=%T", stmt)
-		}
+			if len(program.Statements) != 1 {
+				t.Fatalf("program.Statements does not contain enough statements. expected=%d, got=%d", 1, len(program.Statements))
+			}
 
-		if !testLiteralExpression(t, stmt.Expression, tt.expectedBoolean) {
-			return
-		}
+			stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+			if !ok {
+				t.Fatalf("program.Statments[0] not *ast.ExpressionStatement. got=%T", stmt)
+			}
+
+			if !testLiteralExpression(t, stmt.Expression, tt.expectedBoolean) {
+				return
+			}
+		})
 	}
 }
 
@@ -363,6 +370,8 @@ func TestOperatorPrecedence(t *testing.T) {
 }
 
 func testLiteralExpression(t *testing.T, exp ast.Expression, expected interface{}) bool {
+	t.Helper()
+
 	switch v := expected.(type) {
 	case int:
 		return testIntegerLiteral(t, exp, int64(v))
@@ -402,6 +411,8 @@ func testIntegerLiteral(t *testing.T, exp ast.Expression, value int64) bool {
 }
 
 func testBooleanLiteral(t *testing.T, exp ast.Expression, value bool) bool {
+	t.Helper()
+
 	boolean, ok := exp.(*ast.Boolean)
 	if !ok {
 		t.Fatalf("exp not *ast.Boolean. got=%T", exp)
@@ -422,6 +433,8 @@ func testBooleanLiteral(t *testing.T, exp ast.Expression, value bool) bool {
 }
 
 func testIdentifier(t *testing.T, exp ast.Expression, value string) bool {
+	t.Helper()
+
 	ident, ok := exp.(*ast.Identifier)
 	if !ok {
 		t.Fatalf("stmt.Expression not *ast.Identifier. got=%T", exp)
