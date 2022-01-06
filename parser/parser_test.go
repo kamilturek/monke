@@ -167,12 +167,14 @@ func TestPrefixExpression(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		input        string
-		operator     string
-		integerValue int64
+		input         string
+		operator      string
+		expectedValue interface{}
 	}{
 		{"!5", "!", 5},
 		{"-15", "-", 15},
+		{"!true", "!", true},
+		{"!false", "!", false},
 	}
 
 	for _, tt := range tests {
@@ -200,7 +202,7 @@ func TestPrefixExpression(t *testing.T) {
 			t.Fatalf("exp.Operator is not '%s'. got=%s", tt.operator, exp.Operator)
 		}
 
-		if !testIntegerLiteral(t, exp.Right, tt.integerValue) {
+		if !testLiteralExpression(t, exp.Right, tt.expectedValue) {
 			return
 		}
 	}
@@ -211,9 +213,9 @@ func TestInfixExpression(t *testing.T) {
 
 	tests := []struct {
 		input      string
-		leftValue  int64
+		leftValue  interface{}
 		operator   string
-		rightValue int64
+		rightValue interface{}
 	}{
 		{"5 + 5;", 5, "+", 5},
 		{"5 - 5;", 5, "-", 5},
@@ -223,6 +225,9 @@ func TestInfixExpression(t *testing.T) {
 		{"5 < 5;", 5, "<", 5},
 		{"5 == 5;", 5, "==", 5},
 		{"5 != 5;", 5, "!=", 5},
+		{"true == true", true, "==", true},
+		{"true != false", true, "!=", false},
+		{"false == false", false, "==", false},
 	}
 
 	for _, tt := range tests {
@@ -244,9 +249,22 @@ func TestInfixExpression(t *testing.T) {
 				t.Fatalf("program.Statements[0] not *ast.ExpressionStatement. got=%T", program.Statements[0])
 			}
 
-			_, ok = stmt.Expression.(*ast.InfixExpression)
+			infixExp, ok := stmt.Expression.(*ast.InfixExpression)
 			if !ok {
 				t.Fatalf("stmt.Expression not *ast.InfixExpression. got=%T", stmt.Expression)
+			}
+
+			if !testLiteralExpression(t, infixExp.Left, tt.leftValue) {
+				return
+			}
+
+			if infixExp.Operator != tt.operator {
+				t.Fatalf("infixExp.Operator not %s. got=%s", infixExp.Operator, tt.operator)
+				return
+			}
+
+			if !testLiteralExpression(t, infixExp.Right, tt.rightValue) {
+				return
 			}
 		})
 	}
@@ -352,7 +370,11 @@ func testLiteralExpression(t *testing.T, exp ast.Expression, expected interface{
 		return testIntegerLiteral(t, exp, v)
 	case string:
 		return testIdentifier(t, exp, v)
+	case bool:
+		return testBooleanLiteral(t, exp, v)
 	}
+
+	t.Fatalf("unexpected type. got=%T", expected)
 
 	return false
 }
