@@ -109,7 +109,7 @@ func (es *ExpressionStatement) TokenLiteral() string {
 
 func (es *ExpressionStatement) String() string {
 	if es.Expression != nil {
-		return es.String()
+		return es.Expression.String()
 	}
 
 	return ""
@@ -190,7 +190,7 @@ func (ie *InfixExpression) String() string {
 
 	out.WriteString("(")
 	out.WriteString(ie.Left.String())
-	out.WriteString(ie.Operator)
+	out.WriteString(" " + ie.Operator + " ")
 	out.WriteString(ie.Right.String())
 	out.WriteString(")")
 
