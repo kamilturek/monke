@@ -448,6 +448,54 @@ func TestFunctionParameters(t *testing.T) {
 	}
 }
 
+func TestCallExpression(t *testing.T) {
+	input := "add(1, 2 * 3, 4 + 5);"
+
+	l := lexer.New(input)
+	p := parser.New(l)
+
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	if len(program.Statements) != 1 {
+		t.Fatalf("wrong statements length. expected=%d, got=%d", 1, len(program.Statements))
+	}
+
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("wrong statement type. expected=*ast.ExpressionStatement, got=%T", program.Statements[0])
+	}
+
+	callExp, ok := stmt.Expression.(*ast.CallExpression)
+	if !ok {
+		t.Fatalf("wrong expression type. expected=*ast.CallExpression, got=%T", stmt.Expression)
+	}
+
+	if !testIdentifier(t, callExp.Function, "add") {
+		return
+	}
+
+	if len(callExp.Arguments) != 3 {
+		t.Fatalf("wrong arguments length. expected=%d, got=%d", 3, len(callExp.Arguments))
+	}
+
+	if !testLiteralExpression(t, callExp.Arguments[0], 1) {
+		return
+	}
+
+	if !testInfixExpression(t, callExp.Arguments[1], 2, "*", 3) {
+		return
+	}
+
+	if !testInfixExpression(t, callExp.Arguments[2], 4, "+", 5) {
+		return
+	}
+}
+
+func TestCallExpressionParameters(t *testing.T) {
+	// To be implemented
+}
+
 func TestOperatorPrecedence(t *testing.T) {
 	t.Parallel()
 

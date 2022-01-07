@@ -13,7 +13,7 @@ func testInfixExpression(t *testing.T, exp ast.Expression, expectedLeft interfac
 
 	infixExp, ok := exp.(*ast.InfixExpression)
 	if !ok {
-		t.Errorf("exp is not *ast.InfixExpression. got=%T", exp)
+		t.Errorf("wrong expression type. expected=*ast.InfixExpression. got=%T", exp)
 	}
 
 	if !testLiteralExpression(t, infixExp.Left, expectedLeft) {
@@ -21,7 +21,7 @@ func testInfixExpression(t *testing.T, exp ast.Expression, expectedLeft interfac
 	}
 
 	if infixExp.Operator != expectedOperator {
-		t.Errorf("infixExp.Operator is wrong. expected=%s, got=%s", infixExp.Operator, expectedOperator)
+		t.Errorf("wrong operator. expected=%s, got=%s", infixExp.Operator, expectedOperator)
 		return false
 	}
 
@@ -46,7 +46,7 @@ func testLiteralExpression(t *testing.T, exp ast.Expression, expected interface{
 		return testBooleanLiteral(t, exp, v)
 	}
 
-	t.Fatalf("unexpected type. got=%T", expected)
+	t.Fatalf("unsupported literal type. got=%T", expected)
 
 	return false
 }
@@ -100,17 +100,17 @@ func testIdentifier(t *testing.T, exp ast.Expression, value string) bool {
 
 	ident, ok := exp.(*ast.Identifier)
 	if !ok {
-		t.Fatalf("stmt.Expression not *ast.Identifier. got=%T", exp)
+		t.Fatalf("expression type wrong. expected=*ast.Identifier. got=%T", exp)
 		return false
 	}
 
 	if ident.Value != value {
-		t.Fatalf("ident.Value not %s. got=%s", value, ident.Value)
+		t.Fatalf("identifier value wrong. expected=%s, got=%s", value, ident.Value)
 		return false
 	}
 
 	if ident.TokenLiteral() != value {
-		t.Fatalf("ident.TokenLiteral not %s. got=%s", value, ident.TokenLiteral())
+		t.Fatalf("identifier token literal wrong. expected=%s, got=%s", value, ident.TokenLiteral())
 		return false
 	}
 
