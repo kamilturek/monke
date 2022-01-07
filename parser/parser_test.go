@@ -277,6 +277,51 @@ func TestInfixExpression(t *testing.T) {
 	}
 }
 
+func TestIfExpression(t *testing.T) {
+	input := "if (x < y) { x }"
+
+	l := lexer.New(input)
+	p := parser.New(l)
+
+	program := p.ParseProgram()
+	checkParserErrors(t, p)
+
+	if len(program.Statements) != 1 {
+		t.Fatalf("program.Statements does not contain %d statements. got=%d", 1, len(program.Statements))
+	}
+
+	stmt, ok := program.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("program.Statements[0] is not *ast.ExpressionStatement. got=%T", program.Statements[0])
+	}
+
+	exp, ok := stmt.Expression.(*ast.IfExpression)
+	if !ok {
+		t.Fatalf("stmt.Expression is not *ast.IfExpression. got=%T", stmt.Expression)
+	}
+
+	if !testInfixExpression(t, exp.Condition, "x", "<", "y") {
+		return
+	}
+
+	if len(exp.Consequence.Statements) != 1 {
+		t.Fatalf("exp.Consequence does not contain %d statements. got=%d", 1, len(exp.Consequence.Statements))
+	}
+
+	consequence, ok := exp.Consequence.Statements[0].(*ast.ExpressionStatement)
+	if !ok {
+		t.Fatalf("exp.Consequence.Statements[0] is not *ast.ExpressionStatement. got=%T", exp.Consequence.Statements[0])
+	}
+
+	if !testIdentifier(t, consequence.Expression, "x") {
+		return
+	}
+
+	if exp.Alternative != nil {
+		t.Fatalf("exp.Alternative is not nil. got=%+v", exp.Alternative)
+	}
+}
+
 func TestOperatorPrecedence(t *testing.T) {
 	t.Parallel()
 
@@ -387,6 +432,30 @@ func TestOperatorPrecedence(t *testing.T) {
 			}
 		})
 	}
+}
+
+func testInfixExpression(t *testing.T, exp ast.Expression, expectedLeft interface{}, expectedOperator string, expectedRight interface{}) bool {
+	t.Helper()
+
+	infixExp, ok := exp.(*ast.InfixExpression)
+	if !ok {
+		t.Errorf("exp is not *ast.InfixExpression. got=%T", exp)
+	}
+
+	if !testLiteralExpression(t, infixExp.Left, expectedLeft) {
+		return false
+	}
+
+	if infixExp.Operator != expectedOperator {
+		t.Errorf("infixExp.Operator is wrong. expected=%s, got=%s", infixExp.Operator, expectedOperator)
+		return false
+	}
+
+	if !testLiteralExpression(t, infixExp.Right, expectedRight) {
+		return false
+	}
+
+	return true
 }
 
 func testLiteralExpression(t *testing.T, exp ast.Expression, expected interface{}) bool {
