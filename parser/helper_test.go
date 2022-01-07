@@ -100,17 +100,17 @@ func testIdentifier(t *testing.T, exp ast.Expression, value string) bool {
 
 	ident, ok := exp.(*ast.Identifier)
 	if !ok {
-		t.Fatalf("expression type wrong. expected=*ast.Identifier. got=%T", exp)
+		t.Fatalf("wrong type. expected=*ast.Identifier, got=%T", exp)
 		return false
 	}
 
 	if ident.Value != value {
-		t.Fatalf("identifier value wrong. expected=%s, got=%s", value, ident.Value)
+		t.Fatalf("wrong value. expected=%s, got=%s", value, ident.Value)
 		return false
 	}
 
 	if ident.TokenLiteral() != value {
-		t.Fatalf("identifier token literal wrong. expected=%s, got=%s", value, ident.TokenLiteral())
+		t.Fatalf("wrong token literal. expected=%s, got=%s", value, ident.TokenLiteral())
 		return false
 	}
 
@@ -121,23 +121,23 @@ func testLetStatement(t *testing.T, s ast.Statement, name string) bool {
 	t.Helper()
 
 	if s.TokenLiteral() != "let" {
-		t.Errorf("s.TokenLiteral not 'let'. got=%q", s.TokenLiteral())
+		t.Errorf("wrong token literal. expected=%s got=%s", "let", s.TokenLiteral())
 		return false
 	}
 
 	letStmt, ok := s.(*ast.LetStatement)
 	if !ok {
-		t.Errorf("s not *ast.LetStatement. got=%T", s)
+		t.Errorf("wrong type. expected=*ast.LetStatement, got=%T", s)
 		return false
 	}
 
 	if letStmt.Name.Value != name {
-		t.Errorf("letStmt.Name.Value not '%s'. got=%s", name, letStmt.Name.Value)
+		t.Errorf("wrong value. expected=%s, got=%s", name, letStmt.Name.Value)
 		return false
 	}
 
 	if letStmt.Name.TokenLiteral() != name {
-		t.Errorf("letStmt.Name.Token not '%s'. got=%s", name, letStmt.Name.TokenLiteral())
+		t.Errorf("wrong token literal. expected=%s, got=%s", name, letStmt.Name.TokenLiteral())
 		return false
 	}
 
@@ -148,13 +148,13 @@ func testReturnStatement(t *testing.T, s ast.Statement) bool {
 	t.Helper()
 
 	if s.TokenLiteral() != "return" {
-		t.Errorf("s.TokenLiteral not 'return'. got=%q", s.TokenLiteral())
+		t.Errorf("wrong token literal. expected=%s got=%s", "return", s.TokenLiteral())
 		return false
 	}
 
 	_, ok := s.(*ast.ReturnStatement)
 	if !ok {
-		t.Errorf("s not *ast.ReturnStatement, got=%T", s)
+		t.Errorf("wrong type. expected=*ast.ReturnStatement, got=%T", s)
 		return false
 	}
 
