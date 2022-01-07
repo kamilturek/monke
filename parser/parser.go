@@ -326,21 +326,14 @@ func (p *Parser) parseFunctionParameters() []*ast.Identifier {
 
 	p.nextToken()
 
-	// Maybe we could use parseIdentifier here.
-	ident := &ast.Identifier{
-		Token: p.curToken,
-		Value: p.curToken.Literal,
-	}
+	ident := p.parseIdentifier().(*ast.Identifier)
 	identifiers = append(identifiers, ident)
 
 	for p.peekTokenIs(token.COMMA) {
 		p.nextToken()
 		p.nextToken()
 
-		ident := &ast.Identifier{
-			Token: p.curToken,
-			Value: p.curToken.Literal,
-		}
+		ident := p.parseIdentifier().(*ast.Identifier)
 		identifiers = append(identifiers, ident)
 	}
 
