@@ -493,7 +493,48 @@ func TestCallExpression(t *testing.T) {
 }
 
 func TestCallExpressionParameters(t *testing.T) {
-	// To be implemented
+	tests := []struct {
+		input         string
+		expectedIdent string
+		expectedArgs  []string
+	}{
+		{"add();", "add", []string{}},
+		{"add(1);", "add", []string{"1"}},
+		{"add(1, 2 * 3, 4 + 5);", "add", []string{"1", "(2 * 3)", "(4 + 5)"}},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.input, func(t *testing.T) {
+			t.Parallel()
+
+			l := lexer.New(tt.input)
+			p := parser.New(l)
+
+			program := p.ParseProgram()
+			checkParserErrors(t, p)
+
+			stmt := program.Statements[0].(*ast.ExpressionStatement)
+			callExp, ok := stmt.Expression.(*ast.CallExpression)
+			if !ok {
+				t.Fatalf("wrong expression type. expected=*ast.CallExpression, got=%T", stmt.Expression)
+			}
+
+			if !testIdentifier(t, callExp.Function, tt.expectedIdent) {
+				return
+			}
+
+			if len(callExp.Arguments) != len(tt.expectedArgs) {
+				t.Fatalf("wrong arguments length. expected=%d, got=%d", len(tt.expectedArgs), len(callExp.Arguments))
+			}
+
+			for i, arg := range tt.expectedArgs {
+				if callExp.Arguments[i].String() != arg {
+					t.Fatalf("wrong argument. expected=%s, got=%s", arg, callExp.Arguments[i].String())
+				}
+			}
+		})
+	}
 }
 
 func TestOperatorPrecedence(t *testing.T) {
@@ -586,6 +627,18 @@ func TestOperatorPrecedence(t *testing.T) {
 		{
 			"!(true == true)",
 			"(!(true == true))",
+		},
+		{
+			"a + add(b * c) + d",
+			"((a + add((b * c))) + d)",
+		},
+		{
+			"add(a, b, 1, 2 * 3, 4 + 5, add(6, 7 * 8))",
+			"add(a, b, 1, (2 * 3), (4 + 5), add(6, (7 * 8)))",
+		},
+		{
+			"add(a + b + c * d / f + g)",
+			"add((((a + b) + ((c * d) / f)) + g))",
 		},
 	}
 
