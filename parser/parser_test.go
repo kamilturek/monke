@@ -414,6 +414,41 @@ func TestFunctionLiteral(t *testing.T) {
 	testInfixExpression(t, bodyStmt.Expression, "x", "+", "y")
 }
 
+func TestFunctionParameters(t *testing.T) {
+	tests := []struct {
+		input          string
+		expectedParams []string
+	}{
+		{"fn() {};", []string{}},
+		{"fn(x) {};", []string{"x"}},
+		{"fn(x, y, z) {};", []string{"x", "y", "z"}},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.input, func(t *testing.T) {
+			t.Parallel()
+
+			l := lexer.New(tt.input)
+			p := parser.New(l)
+
+			program := p.ParseProgram()
+			checkParserErrors(t, p)
+
+			stmt := program.Statements[0].(*ast.ExpressionStatement)
+			function := stmt.Expression.(*ast.FunctionLiteral)
+
+			if len(function.Parameters) != len(tt.expectedParams) {
+				t.Errorf("parameters length wrong. expected=%d, got=%d", len(tt.expectedParams), len(function.Parameters))
+			}
+
+			for i, ident := range tt.expectedParams {
+				testLiteralExpression(t, function.Parameters[i], ident)
+			}
+		})
+	}
+}
+
 func TestOperatorPrecedence(t *testing.T) {
 	t.Parallel()
 
