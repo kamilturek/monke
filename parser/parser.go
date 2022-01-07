@@ -92,7 +92,7 @@ func (p *Parser) ParseProgram() *ast.Program {
 	program.Statements = []ast.Statement{}
 
 	for !p.curTokenIs(token.EOF) {
-		if stmt := p.parseStatement(); stmt != nil {
+		if stmt := p.parseStatement(); stmt != nil { //nolint:staticcheck
 			program.Statements = append(program.Statements, stmt)
 		}
 
@@ -102,7 +102,7 @@ func (p *Parser) ParseProgram() *ast.Program {
 	return program
 }
 
-func (p *Parser) parseStatement() ast.Statement {
+func (p *Parser) parseStatement() ast.Statement { //nolint:staticcheck
 	switch p.curToken.Type {
 	case token.LET:
 		return p.parseLetStatement()
@@ -194,7 +194,7 @@ func (p *Parser) parseIdentifier() ast.Expression {
 }
 
 func (p *Parser) parseIntegerLiteral() ast.Expression {
-	value, err := strconv.ParseInt(p.curToken.Literal, 0, 64)
+	value, err := strconv.ParseInt(p.curToken.Literal, 0, 64) //nolint
 	if err != nil {
 		msg := fmt.Sprintf("could not parse %q as integer", p.curToken.Literal)
 		p.errors = append(p.errors, msg)
@@ -295,8 +295,7 @@ func (p *Parser) parseBlockStatement() *ast.BlockStatement {
 	p.nextToken()
 
 	for !p.curTokenIs(token.RBRACE) && !p.curTokenIs(token.EOF) {
-		stmt := p.parseStatement()
-		if stmt != nil {
+		if stmt := p.parseStatement(); stmt != nil { //nolint:staticcheck
 			block.Statements = append(block.Statements, stmt)
 		}
 

@@ -4,6 +4,7 @@ linters:
     - cyclop
     - exhaustivestruct
     - forbidigo
+    - forcetypeassert
     - funlen
     - gochecknoglobals 
     - gocritic

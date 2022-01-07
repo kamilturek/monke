@@ -8,7 +8,9 @@ import (
 	"github.com/kamilturek/monke/parser"
 )
 
-func testInfixExpression(t *testing.T, exp ast.Expression, expectedLeft interface{}, expectedOperator string, expectedRight interface{}) bool {
+func testInfixExpression(
+	t *testing.T, exp ast.Expression, expectedLeft interface{}, expectedOperator string, expectedRight interface{},
+) bool {
 	t.Helper()
 
 	infixExp, ok := exp.(*ast.InfixExpression)
